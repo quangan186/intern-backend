@@ -15,7 +15,12 @@ const createNewAccessCode = async (req, res) => {
      from: '+15712008735',
      to: to
    })
-  .then(message => console.log(message));
+  .then(message => {
+    console.log(message)
+    return res.send(message)
+  }).catch(err =>{
+    console.log(err)
+  });
 };
 
 const validateAccessCode = async (req, res) => {
