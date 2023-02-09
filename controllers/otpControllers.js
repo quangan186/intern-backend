@@ -5,22 +5,29 @@ const twilio = require("twilio");
 const client = new twilio(accountSid, authToken);
 
 const createNewAccessCode = async (req, res) => {
-  const {to} = req.params;
+  // const {to} = req.params;
+  const {phoneNumber} = req.body
   const max = 999999;
   const min = 100000;
   const otp = Math.floor(Math.random() * (max - min) + min);
-  client.messages
-  .create({
-     body: otp.toString(),
-     from: '+15712008735',
-     to: to
-   })
-  .then(message => {
-    console.log(message)
-    return res.send(message)
-  }).catch(err =>{
-    console.log(err)
-  });
+  // client.messages
+  // .create({
+  //    body: otp.toString(),
+  //    from: '+15712008735',
+  //    to: to
+  //  })
+  // .then(message => {
+  //   console.log(message)
+  // }).catch(err =>{
+  //   console.log(err)
+  // });
+  const phoneNumberRegex = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g
+
+  if (phoneNumberRegex.test(phoneNumber)){
+    res.json({otp: otp})
+  } else{
+    res.json({msg: "Invalid!"})
+  }
 };
 
 const validateAccessCode = async (req, res) => {
