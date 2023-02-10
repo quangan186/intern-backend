@@ -3,6 +3,7 @@ const authToken = "01622da3c83a8863f85a8ae06424c431";
 const serviceId = "MGe021a3d36da2e171409384e11a072d0b";
 const twilio = require("twilio");
 const client = new twilio(accountSid, authToken);
+const validatePhoneNumber = require('validate-phone-number-node-js');
 
 const createNewAccessCode = async (req, res) => {
   // const {to} = req.params;
@@ -21,9 +22,7 @@ const createNewAccessCode = async (req, res) => {
   // }).catch(err =>{
   //   console.log(err)
   // });
-  const phoneNumberRegex = /^[+]*[(]{0,1}[0-9]{1,3}[)]{0,1}[-\s\./0-9]*$/g
-
-  if (phoneNumberRegex.test(phoneNumber)){
+  if (validatePhoneNumber.validate(phoneNumber)){
     res.json({otp: otp})
   } else{
     res.json({msg: "Invalid!"})
