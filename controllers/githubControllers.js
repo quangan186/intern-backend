@@ -9,6 +9,7 @@ const searchGithubUsers = async (req, res) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": "token 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",
       },
     }
   )
@@ -22,11 +23,12 @@ const searchGithubUsers = async (req, res) => {
 };
 
 const findGithubUserProfile = async (req, res) => {
-  const { github_user_id } = req.body;
+  const { github_user_id } = req.query;
   fetch(`https://api.github.com/user/${github_user_id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": "token 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",
     },
   })
     .then((res) => res.json())
@@ -50,37 +52,42 @@ const likeGithubUser = async (req, res) => {
   const favoriteGithubUser = database
     .collection("favoriteGithubUser")
     .doc(phone_number);
+  const doc = await favoriteGithubUser.get()
 
-  const doc = await favoriteGithubUser.get();
+  let favoriteList = []
 
-  let favoriteList = [...doc.data().users];
+  if (doc.data().users !== undefined){
+    favoriteList = [...doc.data().users]
+  }
 
-  fetch(`https://api.github.com/user/${github_user_id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => res.json())
-    .then(async (result) => {
-      favoriteList.push({
-        login: result.login,
-        id: result.id,
-        avatar_url: result.avatar_url,
-        html_url: result.html_url,
-        public_repos: result.repos_url,
-        followers: result.followers_url,
-      });
-      await favoriteGithubUser.set({ users: favoriteList });
-      return res.status(200).json({ users: favoriteList });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+  if (favoriteList.indexOf(github_user_id) > -1){
+    favoriteList.splice(favoriteList.indexOf(github_user_id), 1)
+  } else{
+    favoriteList.push(github_user_id)
+  }
+
+  await favoriteGithubUser.set({ users: favoriteList });
+  return res.status(200).json({msg: "Added successful"});
+}
 
 const getUserProfile = async (req, res) => {
   const { phone_number } = req.query;
+  let favoriteList;
+  console.log("+" + phone_number.trim())
+  const favoriteGithubUser = database
+    .collection("favoriteGithubUser")
+    .doc("+" + phone_number.trim());
+  const doc = await favoriteGithubUser.get()
+  if (!doc.exists){
+    console.log("No document found!")
+  } else{
+    if (doc.data().users !== undefined){
+      favoriteList = [...doc.data().users]
+    } else{
+      favoriteList = []
+    }
+    res.json({favorite_github_users: favoriteList})
+  }
 };
 
 module.exports = {
@@ -88,4 +95,5 @@ module.exports = {
   findGithubUserProfile,
   likeGithubUser,
   getUserProfile,
+
 };
