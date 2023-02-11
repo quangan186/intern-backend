@@ -33,3 +33,5 @@
 #### These routes will be called based on the request from users when they interact to the frontend and the data such as favorite Github users will be saved at Firebase.
 
 #### To run the project, after cloning the repository, you need to enter the command "npm i" in the terminal to download the libraries used in the project. Once downloaded, enter the command "npm run dev" to launch the server on localhost.
+
+* Because of the network block, Twilio can't send messages to the phone, so I display OTP right in the "Access Form" page
