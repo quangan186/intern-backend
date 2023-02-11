@@ -51,10 +51,14 @@ const validateAccessCode = async (req, res) => {
   console.log(phoneNumber)
   if (phoneNumber && validatePhoneNumber.validate(phoneNumber)){
     const pendingValidate = database.collection("pendingValidate").doc(phoneNumber);
+    const favoriteGithubUser = database
+    .collection("favoriteGithubUser")
+    .doc(phoneNumber);
     console.log((await pendingValidate.get()).data().otp)
     console.log(accessCode)
     if ((await pendingValidate.get()).data().otp.toString() === accessCode) {
       await pendingValidate.update({ otp: "" });
+      await favoriteGithubUser.set({users: []})
       res.json({ success: true });
     } else {
       res.json({ success: false });

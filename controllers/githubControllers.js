@@ -55,7 +55,7 @@ const likeGithubUser = async (req, res) => {
   const doc = await favoriteGithubUser.get()
 
   let favoriteList = []
-
+  
   if (doc.data().users !== undefined){
     favoriteList = [...doc.data().users]
   }
